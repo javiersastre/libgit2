@@ -1,3 +1,16 @@
+v2.0.0 (unreleased)
+-------------------
+
+## Build improvements
+
+* **iOS XCFramework build script**
+  A new script `script/build-xcframework-ios.sh` produces a static
+  XCFramework suitable for embedding in iOS apps or distributing as a
+  Swift Package Manager binary target. It builds three slices (arm64
+  device, arm64 simulator, x86_64 simulator) using the leetal/ios-cmake
+  toolchain and Apple's built-in SecureTransport TLS backend, requiring
+  no external dependencies beyond Xcode, CMake, and Ninja.
+
 v1.9.0
 ------
 
