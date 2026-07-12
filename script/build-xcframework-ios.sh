@@ -132,14 +132,35 @@ LIB_SIM_FAT="${WORK_DIR}/libgit2-simulator.a"
 lipo -create "$LIB_SIM_ARM64" "$LIB_SIM_X86_64" -output "$LIB_SIM_FAT"
 
 # ---------------------------------------------------------------------------
+# Prepare headers directory
+#
+# Copy include/ into a staging directory and inject a module.modulemap so
+# that Swift consumers can `import libgit2` without a bridging header.
+# We stage into WORK_DIR rather than modifying the source tree, so this
+# works for any historical tag regardless of whether it already has a map.
+# ---------------------------------------------------------------------------
+HEADERS_DIR="${WORK_DIR}/Headers"
+rm -rf "$HEADERS_DIR"
+cp -R "${SOURCE_DIR}/include/" "$HEADERS_DIR/"
+
+if [ ! -f "${HEADERS_DIR}/module.modulemap" ]; then
+    cat > "${HEADERS_DIR}/module.modulemap" <<'MODULEMAP'
+module libgit2 [system] {
+    header "git2.h"
+    export *
+}
+MODULEMAP
+fi
+
+# ---------------------------------------------------------------------------
 # Assemble XCFramework
 # ---------------------------------------------------------------------------
 echo "==> Assembling XCFramework"
 XCFRAMEWORK="${WORK_DIR}/libgit2.xcframework"
 rm -rf "$XCFRAMEWORK"
 xcodebuild -create-xcframework \
-    -library "$LIB_DEVICE"  -headers "${SOURCE_DIR}/include" \
-    -library "$LIB_SIM_FAT" -headers "${SOURCE_DIR}/include" \
+    -library "$LIB_DEVICE"  -headers "$HEADERS_DIR" \
+    -library "$LIB_SIM_FAT" -headers "$HEADERS_DIR" \
     -output "$XCFRAMEWORK"
 
 # ---------------------------------------------------------------------------
