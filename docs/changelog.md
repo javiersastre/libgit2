@@ -11,6 +11,11 @@ v2.0.0 (unreleased)
   toolchain and Apple's built-in SecureTransport TLS backend, requiring
   no external dependencies beyond Xcode, CMake, and Ninja.
 
+* **Swift module map**
+  A `module.modulemap` is now included in `include/` so that Swift
+  projects can import libgit2 directly with `import libgit2` without
+  any additional bridging configuration.
+
 v1.9.0
 ------
 
