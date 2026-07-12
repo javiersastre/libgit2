@@ -125,10 +125,17 @@ LIB_SIM_X86_64=$(build_slice SIMULATOR64)
 
 # ---------------------------------------------------------------------------
 # Merge simulator slices into a fat binary
+#
+# The fat binary must be named libgit2.a (matching the device slice name)
+# so all XCFramework slices share the same binary name — a CocoaPods
+# requirement for vendored XCFrameworks. Each slice lives in its own
+# subdirectory to avoid filename collision.
 # ---------------------------------------------------------------------------
 echo ""
 echo "==> Creating simulator fat binary (arm64 + x86_64)"
-LIB_SIM_FAT="${WORK_DIR}/libgit2-simulator.a"
+SIM_STAGING="${WORK_DIR}/simulator-staging"
+mkdir -p "$SIM_STAGING"
+LIB_SIM_FAT="${SIM_STAGING}/libgit2.a"
 lipo -create "$LIB_SIM_ARM64" "$LIB_SIM_X86_64" -output "$LIB_SIM_FAT"
 
 # ---------------------------------------------------------------------------
